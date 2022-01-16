@@ -257,11 +257,15 @@
             ．{{moment
             this.createdAt}}</span>
         </div>
-        <div>{{this.description}}</div>
+        <div>
+          <a class="text-dark" style="text-decoration:none;" href="/tweets/{{this.id}}/replies">
+            {{this.description}}
+          </a>
+        </div>
         <div class="row align-items-center">
           <div class="col-md-3">
             <span class="mr-2">
-              <button type="submit" data-toggle="modal" data-target="#tweetModel"
+              <button type="submit" data-toggle="modal" data-target="#tweetModel-{{this.id}}"
                 style="border: 0; background-color: #ffffff; "><i class="far fa-comment" data-id={{this.id}}></i>
               </button>{{ this.Replies.length }}
             </span>
@@ -282,6 +286,61 @@
 
             {{/if}}
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="tweetModel-{{this.id}}" tabindex="-1" role="dialog"
+      aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="word-break:break-all;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body" name="description">
+            <div class="row">
+              <div class="col-md-2 mt-2" style="padding-right: 0px; ">
+                <img src={{this.User.dataValues.avatar}} alt="..." class="rounded-circle"
+                  style="width: 50px; height:50px;">
+              </div>
+              <div class="col-md-10" style="padding-left: 0px;">
+                <div class="h6">{{this.User.dataValues.name}} <span
+                    class="text-secondary">@{{this.User.dataValues.account}}
+                    ．{{moment
+                    this.createdAt}}</span>
+                </div>
+                <div>
+                  {{this.description}}
+
+                </div>
+              </div>
+            </div>
+            {{!-- 當前使用者回覆區 --}}
+            <form action='/tweets/{{this.id}}/replies' method="post">
+              <div class="row mt-3">
+                <div class="col-md-2 mt-2" style="padding-right: 0px; ">
+                  <img src={{../user.avatar}} class="rounded-circle" style="width: 50px; height:50px;">
+                </div>
+
+
+
+                <div class="col-md-10" style="padding:0 15px 0 0;">
+                  <textarea name="comment" id="" style="width:100%; min-height:220px;max-height:220px; border:none;"
+                    placeholder="推你的回覆"></textarea>
+                </div>
+              </div>
+
+          </div>
+          <div class="modal-footer" style="border-top: #E6ECF0;">
+            <button type="submit" class="btn btn-secondary"
+              style="border-radius: 40px; background-color:#FF6600; padding:0 6px; border:honeydew 1px solid;">回覆
+            </button>
+
+          </div>
+          </form>
+
         </div>
       </div>
     </div>
@@ -338,10 +397,8 @@
 <script>
   const avatar = document.querySelector('#avatar')
   const cover = document.querySelector('#cover')
-  console.log(avatar)
   const avatarImage = document.querySelector('#avatarImage')
   const coverImage = document.querySelector('#coverImage')
-  console.log(avatarImage)
 
   avatar.addEventListener("change", handleFiles, false);
   cover.addEventListener("change", handleFiles2, false);
@@ -352,7 +409,6 @@
     getFiles = this.files[0]
     const fr = new FileReader();//建立FileReader物件
     fr.onload = function (e) {
-      console.log(e.target.result)
       avatarImage.src = e.target.result
     };
 
@@ -366,7 +422,6 @@
     getFiles2 = this.files[0]
     const fr = new FileReader();//建立FileReader物件
     fr.onload = function (e) {
-      console.log(e.target.result)
       coverImage.src = e.target.result
     };
 
@@ -374,38 +429,6 @@
     fr.readAsDataURL(file);    /* now you can work with the file list */
   }
 
-  const post_User_Data = document.querySelector('#post_User_Data')
-  post_User_Data.addEventListener('click', (event) => {
-    event.preventDefault()
-    var formData1 = new FormData();
-    var formData2 = new FormData();
 
-    const cover = document.querySelector('#cover')
-    const avatar = document.querySelector('#avatar')
-    const name = document.querySelector('#name')
-    const introduction = document.querySelector('#introduction')
-    formData1.append('avatar', avatar.files[0])
-    formData2.append('cover', getFiles2)
-    console.log('=== 名稱 ===')
-    console.log(name.value)
-    console.log('=== 自我介紹 ===')
-    console.log(introduction.value)
-    console.log('=== avatar ===')
-    console.log(formData1)
-    console.log(avatar.files[0])
-    console.log(getFiles)
-    console.log('=== cover ===')
-    console.log(formData2)
-    const data = { avatar: formData1, cover: formData2, name: name.value, introduction: introduction.value }
-    const userId = `{{user.id}}`
-    axios.post(`/api/users/${userId}`, data,)
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-
-  })
 
 </script>
